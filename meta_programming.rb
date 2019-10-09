@@ -92,3 +92,47 @@ puts buddy.age # 24
 # Let's see if our object responds to the new methods we created
 puts buddy.respond_to?(:name) # true
 puts buddy.respond_to?(:name=) # true
+
+#example
+
+class Navigation
+  FIRST_ROLE = ['settings', 'messages', 'groups', 'music', 'news']
+  SECOND_ROLE = ['settings', 'messages']
+
+  def set_current_user(current_user)
+    @current_user = current_user
+  end
+
+  def create_methods
+    current_user_ui_elements.each do |ui_element|
+      self.class.send(:define_method, ("display_#{ui_element}")) { puts "Code for displaying #{ui_element}" }
+    end
+  end
+
+  def display_all_nav_elements
+    current_user_ui_elements.each do |ui_element|
+      self.public_send("display_#{ui_element}")
+    end
+  end
+
+  private
+
+  def current_user_ui_elements
+    Navigation.const_get(@current_user[:role])
+  end
+
+end
+
+current_user = { name: "Alex", role: "FIRST_ROLE" }
+new_navigation = Navigation.new
+new_navigation.set_current_user(current_user)
+new_navigation.create_methods
+new_navigation.display_all_nav_elements
+
+#output
+# Code for displaying settings
+# Code for displaying messages
+# Code for displaying groups
+# Code for displaying music
+# Code for displaying news
+# => ["settings", "messages", "groups", "music", "news"]
