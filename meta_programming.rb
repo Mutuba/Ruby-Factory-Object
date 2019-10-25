@@ -1,52 +1,51 @@
+# frozen_string_literal: true
+
 class Product
   class << self
-    [:name, :brand].each do |attribute|
+    %i[name brand].each do |attribute|
       define_method :"find_by_#{attribute}" do |value|
-        all.find {|prod| prod.public_send(attribute) == value }
+        all.find { |prod| prod.public_send(attribute) == value }
       end
     end
   end
 end
 
-#same as
+# same as
 
 class Product
   def self.find_by_name(value)
-    all.find {|prod| prod.name == value }
+    all.find { |prod| prod.name == value }
   end
 
   def self.find_by_brand(value)
-    all.find {|prod| prod.brand == value }
+    all.find { |prod| prod.brand == value }
   end
 end
 
-
 class User
+  ACTIVE = 0
+  INACTIVE = 1
+  PENDING = 2
 
-    ACTIVE = 0
-    INACTIVE = 1
-    PENDING = 2
+  attr_accessor :status
 
-    attr_accessor :status
-
-    def self.states(*args)
-      args.each do |arg|
-        define_method "#{arg}?" do
-          self.status == User.const_get(arg.upcase)
-        end
+  def self.states(*args)
+    args.each do |arg|
+      define_method "#{arg}?" do
+        status == User.const_get(arg.upcase)
       end
     end
+  end
 end
 
-  User.states('active', 'inactive', 'pending')
-  u = User.new
-  u.status = 0
+User.states('active', 'inactive', 'pending')
+u = User.new
+u.status = 0
 
-  p u.active? # true
+p u.active? # true
 
-
-  # example
-  # Let's create a base class to extend from.
+# example
+# Let's create a base class to extend from.
 # This class contains the code generator methods that we'll be using.
 class Base
   def self.getset(*args)
@@ -84,7 +83,7 @@ class Alpaca < Base
   end
 end
 
-buddy = Alpaca.new("Buddy", 24)
+buddy = Alpaca.new('Buddy', 24)
 # Let's call our methods and make sure they return what we expect
 puts buddy.name # Buddy
 puts buddy.age # 24
@@ -93,11 +92,11 @@ puts buddy.age # 24
 puts buddy.respond_to?(:name) # true
 puts buddy.respond_to?(:name=) # true
 
-#example
+# example
 
 class Navigation
-  FIRST_ROLE = ['settings', 'messages', 'groups', 'music', 'news']
-  SECOND_ROLE = ['settings', 'messages']
+  FIRST_ROLE = %w[settings messages groups music news].freeze
+  SECOND_ROLE = %w[settings messages].freeze
 
   def set_current_user(current_user)
     @current_user = current_user
@@ -105,13 +104,13 @@ class Navigation
 
   def create_methods
     current_user_ui_elements.each do |ui_element|
-      self.class.send(:define_method, ("display_#{ui_element}")) { puts "Code for displaying #{ui_element}" }
+      self.class.send(:define_method, "display_#{ui_element}") { puts "Code for displaying #{ui_element}" }
     end
   end
 
   def display_all_nav_elements
     current_user_ui_elements.each do |ui_element|
-      self.public_send("display_#{ui_element}")
+      public_send("display_#{ui_element}")
     end
   end
 
@@ -120,19 +119,57 @@ class Navigation
   def current_user_ui_elements
     Navigation.const_get(@current_user[:role])
   end
-
 end
 
-current_user = { name: "Alex", role: "FIRST_ROLE" }
+current_user = { name: 'Alex', role: 'FIRST_ROLE' }
 new_navigation = Navigation.new
 new_navigation.set_current_user(current_user)
 new_navigation.create_methods
 new_navigation.display_all_nav_elements
 
-#output
+# output
 # Code for displaying settings
 # Code for displaying messages
 # Code for displaying groups
 # Code for displaying music
 # Code for displaying news
 # => ["settings", "messages", "groups", "music", "news"]
+
+# Memoize
+class ShowPresenter
+  extend ActiveSupport::Memoizable
+
+  def initialize(tweet)
+    @tweet = tweet
+  end
+
+  def username
+    @tweet.user.username
+  end
+
+  def status
+    @tweet.status
+  end
+
+  def favorites_count
+    @tweet.favorites.count
+  end
+
+  memoize :username, :status, :favorites_count
+end
+
+# my_xbonacci([1,1,1,1], 6)
+# signature.length
+
+# a=["dan", "mutuba", "deno"]
+# b= ["dan", "mutuba", "deno", "njeri"]
+
+# def merger(arr1,arr2)
+# merged_arr = {}.tap { |hash| (arr1 + arr2).each { |el| hash[el] ||= el } }.keys
+# end
+
+# p merger(a,b)
+ha = {}
+
+[1, 2, 3, 4, 4, 5, 5, 7, 7, 8].each { |el| ha[el] ||= el }
+p ha

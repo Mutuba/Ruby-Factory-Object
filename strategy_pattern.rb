@@ -45,9 +45,7 @@ end
 
 Taxes.new(1200).net_salary('U.S.') # => 700.0
 
-
 # Example3
-
 
 class ResponseHandler
   def self.handle(response, strategies)
@@ -60,7 +58,7 @@ def show
 
   on_success = -> { "Successful response: #{response.data}" }
   on_error = -> { "Error: #{response.error_message}" }
-  on_fail = -> { "Request Failed" }
+  on_fail = -> { 'Request Failed' }
 
   ResponseHandler.handle(response, success: on_success, error: on_error, fail: on_fail)
 end

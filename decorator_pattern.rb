@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # In object-oriented programming, the decorator pattern — is a design pattern that allows behavior to be added to an individual object, either statically or dynamically, without affecting the behavior of other objects from the same class. (Wikipedia)
 
 class User
@@ -25,7 +27,7 @@ end
 
 # Usage
 
-u = User.new("John", "Doe")
+u = User.new('John', 'Doe')
 decorated_user = DecoratedUser1.new(u)
 
 decorated_user.full_name # => John Doe
@@ -51,7 +53,7 @@ class DecoratedUser2
   end
 end
 
-u = User.new("John", "Doe")
+u = User.new('John', 'Doe')
 decorated_user = DecoratedUser2.new(u)
 
 decorated_user.full_name # => John Doe
@@ -68,7 +70,7 @@ class DecoratedUser3 < SimpleDelegator
   end
 end
 
-u = User.new("John", "Doe")
+u = User.new('John', 'Doe')
 decorated_user = DecoratedUser3.new(u)
 #  On each method call Ruby tries to find it in current class (DecoratedUser)
 # and if there is no such method - it tries to find that
